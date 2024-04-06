@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Query,
+  HttpCode,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -17,6 +18,7 @@ import { PaginationDto } from '../common/';
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
+  @HttpCode(201)
   @Post()
   create(@Body() createProductDto: CreateProductDto) {
     return this.productsService.create(createProductDto);
@@ -37,6 +39,7 @@ export class ProductsController {
     return this.productsService.update(+id, updateProductDto);
   }
 
+  @HttpCode(204)
   @Delete(':id')
   remove(@Param('id') id: number) {
     return this.productsService.remove(+id);

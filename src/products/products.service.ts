@@ -9,7 +9,6 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { PrismaClient } from '@prisma/client';
 import { Iproduct, IProductResponse } from './interfaces';
 import { PaginationDto } from '../common/';
-import { Product } from './entities/product.entity';
 
 @Injectable()
 export class ProductsService extends PrismaClient implements OnModuleInit {
@@ -28,11 +27,12 @@ export class ProductsService extends PrismaClient implements OnModuleInit {
 
   async findAll(paginationDto: PaginationDto): Promise<IProductResponse> {
     const { limit, page } = paginationDto;
-    const totalPages = await this.product.count();
+    const totalPages = await this.product.count({ where: { available: true } });
     const lastPage = Math.ceil(totalPages / limit);
     const data: Iproduct[] = await this.product.findMany({
       take: limit,
       skip: (page - 1) * limit,
+      where: { available: true },
     });
     return {
       data: data,
@@ -49,6 +49,7 @@ export class ProductsService extends PrismaClient implements OnModuleInit {
     const product = await this.product.findUnique({
       where: {
         id,
+        available: true,
       },
     });
     if (!product) {
@@ -57,19 +58,25 @@ export class ProductsService extends PrismaClient implements OnModuleInit {
     return product;
   }
 
-  update(id: number, updateProductDto: UpdateProductDto) {
-    const product = this.findOne(id);
-    if (product) {
-      return this.product.update({
-        where: {
-          id,
-        },
-        data: updateProductDto,
-      });
-    }
+  async update(id: number, updateProductDto: UpdateProductDto) {
+    await this.findOne(id);
+    return await this.product.update({
+      where: {
+        id,
+      },
+      data: updateProductDto,
+    });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} product`;
+  async remove(id: number): Promise<void> {
+    await this.findOne(id);
+    await this.product.update({
+      where: {
+        id,
+      },
+      data: {
+        available: false,
+      },
+    });
   }
 }
