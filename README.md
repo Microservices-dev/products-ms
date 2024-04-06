@@ -4,8 +4,6 @@ This MS was generate with NestJS
 
 ## Installation
 
-Installation
-
 1. Clone Respository
 
 2. Install dependencies
@@ -25,7 +23,7 @@ npx prisma migrate dev
 5. Run App
 
 ```
-npm install
+npm run start:dev
 ```
 
 ### Author
