@@ -1,8 +1,9 @@
 import { Type } from 'class-transformer';
-import { IsNumber, IsString, Min } from 'class-validator';
+import { IsNumber, IsString, Min, MinLength } from 'class-validator';
 
 export class CreateProductDto {
   @IsString()
+  @MinLength(3)
   name: string;
 
   @IsNumber({ maxDecimalPlaces: 4 })
