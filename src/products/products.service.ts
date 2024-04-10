@@ -1,5 +1,5 @@
 import { HttpStatus, Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import { CreateProductDto } from './dto/create-product.dto';
+import { CreateProductDto } from './dto/create-product.dto-';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { PrismaClient } from '@prisma/client';
 import { Iproduct, IProductResponse } from './interfaces';
@@ -78,5 +78,30 @@ export class ProductsService extends PrismaClient implements OnModuleInit {
         available: false,
       },
     });
+  }
+
+  async validateProducts(ids: number[]): Promise<Iproduct[]> {
+    ids = Array.from(new Set(ids));
+    const products = await this.product.findMany({
+      select: {
+        id: true,
+        price: true,
+        name: true,
+      },
+      where: {
+        id: {
+          in: ids,
+        },
+        available: true,
+      },
+    });
+
+    if (products.length !== ids.length) {
+      throw new RpcException({
+        message: 'Some products are not available',
+        status: HttpStatus.BAD_REQUEST,
+      });
+    }
+    return products as Iproduct[];
   }
 }
