@@ -1,6 +1,6 @@
 # Product Microservice
 
-This MS was generate with NestJS
+This Microservice was generate with NestJS
 
 ## Installation
 
